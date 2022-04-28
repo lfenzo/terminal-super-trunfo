@@ -5,7 +5,7 @@ da disciplina de Sustentabilidade e Computação no primeiro semestre de 2022. O
 é composto por 32 cartas cada correspondente a em equipamento eletro-eletrônico 
 utilizado no dia a dia. Cada carta possui 5 atributos 
 
-![](../img/menu.png)
+![](./img/menu.png)
 
 O objetivo do jogo é fazer com que o adversário fique sem nenhuma carta, a cada
 rodada são comparadas as duas cartas que estão nas mãos dos jogadores. O jogador
