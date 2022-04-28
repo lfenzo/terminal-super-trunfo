@@ -58,7 +58,7 @@ seguinte maneira:
 
 | **Item** | **Descrição** |
 |-----|--- |
-| `SuperTrunfo/src/SuperTrunfo.jl` | Módulo com definições de tipos além das funções auxiliares utilizadas pelo jogo. |
-| `baralho.csv` | Arquivo `.csv` contendo os atributos das cartas disponíveis no jogo.|
-| `play.jl` | Função principal contendo o loop principal utilizado no |
-| `generate.jl` | Durente o desenvolviemnto do jogo este script foi utilizados simulação as cartas por meio da geração de valores pseudo-aleatórios em cada um dos atributos das cartas. |
+| [`SuperTrunfo/src/SuperTrunfo.jl`](https://github.com/lfenzo/terminal-super-trunfo/blob/master/SuperTrunfo/src/SuperTrunfo.jl) | Módulo com definições de tipos além das funções auxiliares utilizadas pelo jogo. |
+| [`baralho.csv`](https://github.com/lfenzo/terminal-super-trunfo/blob/master/baralho.csv) | Arquivo `.csv` contendo os atributos das cartas disponíveis no jogo.|
+| [`play.jl`](https://github.com/lfenzo/terminal-super-trunfo/blob/master/play.jl) | Função principal contendo o loop principal utilizado no |
+| [`generate_data.jl`](https://github.com/lfenzo/terminal-super-trunfo/blob/master/generate_data.jl) | Durente o desenvolviemnto do jogo este script foi utilizados simulação as cartas por meio da geração de valores pseudo-aleatórios em cada um dos atributos das cartas. |
