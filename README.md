@@ -15,8 +15,8 @@ oponente.
 
 <table>
     <tr>
-        <td><img src = "../img/player_wins.png"></td>
-        <td><img src = "../img/bot_wins.png"></td>
+        <td><img src = "./img/player_wins.png"></td>
+        <td><img src = "./img/bot_wins.png"></td>
     </tr>
 </table>
 
