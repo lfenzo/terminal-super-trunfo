@@ -26,6 +26,10 @@ function main()
 
     print_greeting()
 
+    println(Panel("Escolha a dificuldade:"))
+    difficulty_menu = RadioMenu(["Fácil", "Difícil (cuidado...)"])
+    difficulty = request(difficulty_menu) == 1 ? "easy" : "hard"
+
     player = Player("Joao", player_cards)
     bot = Player("Bot", bot_cards)
 
@@ -34,6 +38,7 @@ function main()
     # apenas para a primeira rodada
     current_player, next_player = choose_first(player, bot)
 
+    sleep(3)
 
     while !isempty(current_player) && !isempty(next_player)
 
@@ -53,25 +58,26 @@ function main()
             sleep(1)
             println(card2panel(current_player, color = "yellow")
                 * " "^4 *  "Além dessa o bot tem mais $(length(current_player.cards_at_hand) - 1) carta(s)")
-            chosen_feature = bot_plays(current_player, all_cards_df)
+            chosen_feature = bot_plays(current_player, all_cards_df, difficulty)
             println("Bot escolheu o atributo $chosen_feature")
             sleep(2)
         end
 
         if current_player === player
-            println(Panel("Comparando a [bold blue]carta do jogador[/bold blue] com a [bold yellow]carta do bot[/bold yellow]"))
+            println(Panel("""Comparando a [bold blue]carta do jogador[/bold blue] com a 
+                             [bold yellow]carta do bot[/bold yellow]"""))
         else
-            println(Panel("Comparando a [bold yellow]carta do bot[/bold yellow] com a [bold blue]carta do jogador[/bold blue]"))
+            println(Panel("""Comparando a [bold yellow]carta do bot[/bold yellow] com a 
+                             [bold blue]carta do jogador[/bold blue]"""))
         end
 
         show_round_cards(current_player, next_player, chosen_feature, current_player === player)
 
-        sleep(2)
         winner = execute_round(current_player, next_player, deck, chosen_feature)
 
         if winner != nothing
             color = winner === player ? "green" : "red"
-            println(Panel("[$color]O $(winner.name) venceu![/$color]"))
+            println(Panel("[$color]O $(winner.name) venceu a rodada![/$color]"))
 
             if current_player !== winner 
                 current_player, next_player = next_player, current_player 
@@ -85,7 +91,12 @@ function main()
     end
 
     winner = isempty(current_player) ? next_player : current_player
-    println("\n\no $(winner.name) venceu!!!\n\n")
+
+    if winner.name == "Bot"
+        println(Panel("[bold red]O bot ganhou o jogo... :(  [/bold red]"))
+    else
+        println(Panel("[bold green] Parabens!! Voce ganhou o jogo!! [/bold green]"))
+    end
 end
 
 main()

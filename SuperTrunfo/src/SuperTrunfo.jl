@@ -1,7 +1,5 @@
 module SuperTrunfo
 
-import Base: isempty
-
 using Term
 using Random
 using Statistics
@@ -23,8 +21,18 @@ export top_card2str
 export show_round_cards
 export shuffle_cards
 
+
 """
-Implementação da carta
+    Card(number::Int64 name::String features::Vector{Float64} feature_names::Vector{String})
+
+Instancia uma nova carta para ser utilizada durante o jogo.
+
+# Parametros
+
+`number::Int64` Número da carta
+`name::String` Nome do objeto na carta
+`features::Vector{Float64}` Valor de cada um dos atributos da carta.
+`feature_names::Vector{String}` Nomes dos atributos da carta.
 """
 mutable struct Card
     number::Int64
@@ -35,9 +43,14 @@ end
 
 
 """
-    Player(name::String, cards_at_hand::Queue{Card})
+    Player(name::String, cards::Vector{Card})
 
-Implementação do jogador com as suas cartas
+Instancia um jogador a partir do seu nome e das cartas em sua mão.
+
+# Parametros
+
+`name::String` Nome do jogador
+`cards_at_hand::Queue{Card}` Conjunto de cartas na mão do jogador.
 """
 mutable struct Player
     name::String
@@ -55,20 +68,19 @@ end
 """
     isempty(p::Player)
 
-Verifica se o jogador `p` ainda tem cartas em sua mão (ou seja, se ele não está vazio)
+Verifica se o jogador `p` ainda tem cartas em sua mão.
 """
-isempty(p::Player) = Base.isempty(p.cards_at_hand)
+Base.isempty(p::Player) = Base.isempty(p.cards_at_hand)
 
 
 """
     top_card2str(p::Player) :: Vector{String}
 
-Obtem as correspondências 
-Função auxiliar utilizada no menu de escolha de atributos
+Função auxiliar utilizada no menu de escolha de atributos.
 
-Parameters
-----------
-`p::Player`; Jogador atual
+# Parametros
+
+- `p::Player`; Jogador atual
 """
 function top_card2str(p::Player) :: Vector{String}
 
@@ -78,12 +90,21 @@ function top_card2str(p::Player) :: Vector{String}
     for (value, feature) in zip(first_card.features, first_card.feature_names) 
         push!(card_features, "$feature")
     end
+
     return card_features
 end
 
 
 """
-Monte de cartas que fica na mesa
+    Deck(cards::Vector{Card})
+
+Instancia um novo conjunto de cartas. Essas cartas não fazem parte da mão de 
+nenhum jogador, na verdade elas ficam à disposiçao na mesa e, em caso de empatae,
+as cartas nas mãos dos jogadores vão para o `Deck`.
+
+# Parametros
+
+- `cards::Vector{Card}` Vetor contendo as cartas que devem colocadas no deck.
 """
 mutable struct Deck
     cards_available::Queue{Card}
@@ -97,11 +118,21 @@ mutable struct Deck
         return new(cards_in_deck, stand_by_cards)
     end
 end
-isempty(d::Deck) = Base.isempty(d.cards_available)
+Base.isempty(d::Deck) = Base.isempty(d.cards_available)
 
 
 """
-Mostra uma carta com os seus atributos
+    card2panel(c::Card; color::AbstractString = "white", highlight_feature::Union{Nothing, Int64} = nothing) :: Panel
+
+
+Mostra uma carta `c` com os seus respectivos atributos em um painel do Term.jl
+
+# Parametros
+
+- `c::Card` Carta a ser mostrada. 
+- `color::AbstractString = "white"` Cor padrão para realizar a coloração da carta.
+- `highlight_feature::Union{Nothing, Int64} = nothing` Dá destaque para o atributo
+    (utilizado na comparação dos atributos das cartas dos jogadores).
 """
 function card2panel(c::Card;
         color::AbstractString = "white",
@@ -138,15 +169,30 @@ function card2panel(c::Card;
     return main_card_panel
 end
 
-function card2panel(p::Player; highlight_feature::Union{Nothing, Int64} = nothing, color::AbstractString = "white")
+function card2panel(p::Player;
+        highlight_feature::Union{Nothing, Int64} = nothing,
+        color::AbstractString = "white")
+
     return card2panel(first(p.cards_at_hand); highlight_feature, color = color)
 end
 
 
 """
-Mostra a carta do jogador e a carta do bot lado a lado para a comparação
+    show_round_cards(current_player::T, next_player::T, choice::Int64, is_first_human::Bool) where {T <: Player}
+
+Mostra a carta do jogador e a carta do bot lado a lado para a comparação do round atual.
+
+# Parametros
+
+- `current_player::Player`
+- `next_player::Player`
+- `choice::Int64`
+- `is_first_human::Bool`
 """
-function show_round_cards(current_player::T, next_player::T, choice::Int64, is_first_human::Bool) where {T <: Player}
+function show_round_cards(current_player::T,
+        next_player::T,
+        choice::Int64,
+        is_first_human::Bool) where {T <: Player}
 
     current_color, next_color = is_first_human ? ("blue", "yellow") : ("yellow", "blue")
 
@@ -162,6 +208,12 @@ function show_round_cards(current_player::T, next_player::T, choice::Int64, is_f
 end
 
 
+"""
+    choose_first(player::T, bot::T) :: Tuple{T, T} where {T <: Player}
+
+Escolho o primeiro jogador no início do jogo retornando a order dos jogadores
+para a primeira rodada: jogador atual e jogador da próxima rodada.
+"""
 function choose_first(player::T, bot::T) :: Tuple{T, T} where {T <: Player}
 
     panel = Panel("Vamos tirar par ou impar para ver quem começa..."; width = 98)
@@ -186,47 +238,65 @@ function choose_first(player::T, bot::T) :: Tuple{T, T} where {T <: Player}
         second = player
     end
 
-    return player, bot # TODO remover isso depis
-    #return first, second
-end
-
-
-function shuffle_cards(all_cards::Vector{Card}) :: Tuple{Vector{Card}, Vector{Card}, Vector{Card}}  
-    shuffled_cards = shuffle(all_cards)
-
-    player_cards = Vector{Card}()
-    bot_cards = Vector{Card}()
-    deck_cards = Vector{Card}()
-
-    for card in shuffled_cards[begin:8]
-        push!(player_cards, card) 
-    end
-
-    for card in shuffled_cards[9:16]
-        push!(bot_cards, card) 
-    end
-
-    for card in shuffled_cards[17:end]
-        push!(deck_cards, card) 
-    end
-
-    return player_cards, bot_cards, deck_cards
+    return first, second
 end
 
 
 """
-Executa uma iteração de round  
+    shuffle_cards(all_cards::Vector{Card}) :: Tuple{Vector{Card}, Vector{Card}, Vector{Card}}
 
+Embaralha as cartas `all_cards` returnando 3 conjuntos nas proporções 25%, 25%
+e 50%, respectivamente:
+- cartas do jogador
+- cartas do bot
+- cartas do deck
+
+# Parametros
+
+- `all_cards::Vector{Card}` Vetor com todas as cartas disponíveis no jogo.
+"""
+function shuffle_cards(all_cards::Vector{Card}) :: Tuple{Vector{Card}, Vector{Card}, Vector{Card}}  
+
+    shuffled_cards = shuffle(all_cards)
+
+    card_sets = [Vector{Card}() for i in 1:3] # vatores de cartas 
+    split_ranges = [1:8, 9:16, 17:32]
+
+    for (card_set, range) in zip(card_sets, split_ranges)
+        for card in shuffled_cards[range]
+            push!(card_set, card)
+        end
+    end
+
+    return tuple(card_sets...)
+end
+
+
+"""
+    execute_round(p1::Player, p2::Player, deck::Deck, choice::Int) :: Union{Nothing, Player}
+
+Avalia o reultado de um round no jogo, a partir dos jogadores `p1` e `p2` e da
+escolha feita pelo jogador que pode escolhar o atributo na rodada. Em caso de empate
+então `nothing` é retornado e as duas cartas das mãos dos jogadores vão parar no
+`deck`.
+
+# Parametros
+
+- `p1::Player` Jogador atual (aquele que escolheu o atributo)
+- `p2::Player` Jogador oponente
+- `deck::Deck` Conjunto de cartas da mesa, inclusive aquelas que foram adicionadas no empate
+- `choice::Int` Atributo escolhido pelo jogador `p1` a partir do qual a comparação será feita
 """
 function execute_round(p1::Player, p2::Player, deck::Deck, choice::Int) :: Union{Nothing, Player}
     p1_card = first(p1.cards_at_hand)
     p2_card = first(p2.cards_at_hand)
     winner = nothing
 
+    # determina a função de comparação com base no atributo escolhido.
     if choice in [1, 2]
-        compare_func = >
+        compare_func = > # maior é melhor
     else
-        compare_func = <
+        compare_func = < # menor é melhor
     end
 
     if compare_func(p1_card.features[choice], p2_card.features[choice])
@@ -245,15 +315,19 @@ function execute_round(p1::Player, p2::Player, deck::Deck, choice::Int) :: Union
     end
 
     if winner != nothing
+
         card = dequeue!(loser.cards_at_hand)
         enqueue!(winner.cards_at_hand, card)
 
         # se houve empate antes o ganhador fica com as cartas do monte de empate
         if !isempty(deck.stand_by_cards)
+            print("Nesta rodada o $(winner.name) ganhou a(s) seguinte(s) carta(s) do(s) empate(s): ")
             while !isempty(deck.stand_by_cards)
                 stand_by_card = dequeue!(deck.stand_by_cards)
+                print(" [$(stand_by_card.number)]")
                 enqueue!(winner.cards_at_hand, stand_by_card)
             end
+            println()
         end
     end
 
@@ -262,29 +336,42 @@ end
 
 
 """
-Escolhe a jogada para o bot: utiliza uma heuristica para realizar a jogada do bot
+    bot_plays(b::Player, df::DataFrame, difficulty::AbstractSring = "easy") :: Int64
+
+No modo dificil, a heurística ranqueia as valores dos atributos na mão do jogador. O atributo
+escolhido será aquele que possui o maior valor do percentil de cada atributo. Esse valor é 
+determinado com auxilio de todos os valores de todas as cartas (por meio do dataframe `df`).
+
+Caso o modo seja facil (`difficulty == "easy"`) o bot escolho um atributo aleatoriamente
+caso contrário ele utiiza uma heurística para realizar a jogada.
 """
-function bot_plays(b::Player, df::DataFrame) :: Int64
+function bot_plays(b::Player, df::DataFrame, difficulty::AbstractString = "easy") :: Int64
 
-    features = first(b.cards_at_hand).features
-    nrows = nrow(df)
+    if difficulty == "easy"
+        choice = rand(1:5)
+    else
+        nrows = nrow(df)
+        features = first(b.cards_at_hand).features
 
-    # note as indices...
-    vdut_rank = sum(map(x -> x <= features[1] ? 1 : 0,  df[:, 2])) / nrows
-    proc_rank = sum(map(x -> x <= features[2] ? 1 : 0,  df[:, 3])) / nrows
-    ener_rank = sum(map(x -> x >= features[3] ? 1 : 0,  df[:, 4])) / nrows
-    prod_rank = sum(map(x -> x >= features[4] ? 1 : 0,  df[:, 5])) / nrows
-    toxc_rank = sum(map(x -> x >= features[5] ? 1 : 0,  df[:, 6])) / nrows
+        # note as indices...
+        vdut_rank = sum(map(x -> x <= features[1] ? 1 : 0,  df[:, 2])) / nrows
+        proc_rank = sum(map(x -> x <= features[2] ? 1 : 0,  df[:, 3])) / nrows
+        ener_rank = sum(map(x -> x >= features[3] ? 1 : 0,  df[:, 4])) / nrows
+        prod_rank = sum(map(x -> x >= features[4] ? 1 : 0,  df[:, 5])) / nrows
+        toxc_rank = sum(map(x -> x >= features[5] ? 1 : 0,  df[:, 6])) / nrows
 
-    # mesma ordem dos atributosn
-    values = [vdut_rank, proc_rank, ener_rank, prod_rank, toxc_rank]
+        # mesma ordem dos atributosn
+        choice = argmax([vdut_rank, proc_rank, ener_rank, prod_rank, toxc_rank])
+    end
 
-    return argmax(values)
+    return choice
 end
 
 
 """
-mostra a mensagem inicial no momento de abrir o jogo
+    print_greeting()
+
+Exibe a mensagem inicial com a descrição dos atributos e as regras do jogo.
 """
 function print_greeting()
 
@@ -310,7 +397,8 @@ function print_greeting()
     )
 
     greater_better = Panel(
-        TextBox("\n\n[bold green][⯅] Ganha o maior valor[/bold green]", width = 30) / TextBox("[bold red][▼] Ganha o menor valor[/bold red]", width = 30),
+        /(TextBox("\n\n[bold green][⯅] Ganha o maior valor[/bold green]", width = 30),
+          TextBox("[bold red][▼] Ganha o menor valor[/bold red]", width = 30)),
         title = "Força dos Atributos",
         title_style = "bold white",
         height = 13,
@@ -318,11 +406,19 @@ function print_greeting()
     )
 
     feature_descriptions = Dict(
-        "[green]Vida Útil:[/green]" => "Quantidade de tempo (em anos) que o produto deve funcionar sem que seja necessário trocá-lo.",
-        "[green]Capacidade de Processamento:[/green]" => "Quantidade de informação que o produto pode processar/utilizar, quando pssivel",
-        "[red]Energia Consumida:[/red]" => "Quantidade de energia que o produto gasta durante o seu funcionamento",
-        "[red]Produção Anual:[/red]" => "Quantidade de unidades do produto produzidas no último ano no mundo",
-        "[red]Toxicidade:[/red]" => "Nível de toxicidade dos materiais que compôem o produto",
+        "[green]Vida Útil:[/green]" => """Quantidade de tempo (em anos) que o produto 
+            deve funcionar sem que seja necessário trocá-lo.""",
+
+        "[green]Capacidade de Processamento:[/green]" => """Quantidade de informação que 
+            o produto pode processar/utilizar, quando pssivel""",
+
+        "[red]Energia Consumida:[/red]" => """Quantidade de energia que o produto 
+            gasta durante o seu funcionamento""",
+
+        "[red]Produção Anual:[/red]" => """Quantidade de unidades do produto produzidas 
+            no último ano no mundo""",
+
+        "[red]Toxicidade:[/red]" => """Nível de toxicidade dos materiais que compôem o produto""",
     )
 
     text_boxes = [
