@@ -1,4 +1,4 @@
-# Super Trunfo ou, em caso de empate, ambas as cartas dos jogadors voltam para o baralho.
+# Super Trunfo
 
 Implementação do jogo Super Trunfo com tema de sustentabilidade como Projeto Prático
 da disciplina de Sustentabilidade e Computação no primeiro semestre de 2022. O jogo
