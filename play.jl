@@ -64,11 +64,11 @@ function main()
         end
 
         if current_player === player
-            println(Panel("""Comparando a [bold blue]carta do jogador[/bold blue] com a 
-                             [bold yellow]carta do bot[/bold yellow]"""))
+            println(Panel("Comparando a [bold blue]carta do jogador[/bold blue] com a " *
+                            "[bold yellow]carta do bot[/bold yellow]"))
         else
-            println(Panel("""Comparando a [bold yellow]carta do bot[/bold yellow] com a 
-                             [bold blue]carta do jogador[/bold blue]"""))
+            println(Panel("Comparando a [bold yellow]carta do bot[/bold yellow] com a " *
+                            "[bold blue]carta do jogador[/bold blue]"))
         end
 
         show_round_cards(current_player, next_player, chosen_feature, current_player === player)
@@ -92,10 +92,18 @@ function main()
 
     winner = isempty(current_player) ? next_player : current_player
 
-    if winner.name == "Bot"
+    if winner === bot
         println(Panel("[bold red]O bot ganhou o jogo... :(  [/bold red]"))
-    else
+    elseif winner === player
         println(Panel("[bold green] Parabens!! Voce ganhou o jogo!! [/bold green]"))
+    else
+        if length(player.cards_at_hand) > length(bot.cards_at_hand)
+            println(Panel("[bold green] Parabens!! Voce ganhou o jogo!! [/bold green]"))
+        elseif length(bot.cards_at_hand) > length(player.cards_at_hand)
+            println(Panel("[bold red]O bot ganhou o jogo... :(  [/bold red]"))
+        else
+            println(Panel("[bold yellow] Houve mpate ... :| [/bold yellow]"))
+        end
     end
 end
 

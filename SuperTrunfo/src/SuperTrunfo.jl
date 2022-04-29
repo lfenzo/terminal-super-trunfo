@@ -354,11 +354,11 @@ function bot_plays(b::Player, df::DataFrame, difficulty::AbstractString = "easy"
         features = first(b.cards_at_hand).features
 
         # note as indices...
-        vdut_rank = sum(map(x -> x <= features[1] ? 1 : 0,  df[:, 2])) / nrows
-        proc_rank = sum(map(x -> x <= features[2] ? 1 : 0,  df[:, 3])) / nrows
-        ener_rank = sum(map(x -> x >= features[3] ? 1 : 0,  df[:, 4])) / nrows
-        prod_rank = sum(map(x -> x >= features[4] ? 1 : 0,  df[:, 5])) / nrows
-        toxc_rank = sum(map(x -> x >= features[5] ? 1 : 0,  df[:, 6])) / nrows
+        vdut_rank = sum(map(x -> x <= features[1] ? 1 : 0, df[:, 2])) / nrows
+        proc_rank = sum(map(x -> x <= features[2] ? 1 : 0, df[:, 3])) / nrows
+        ener_rank = sum(map(x -> x >= features[3] ? 1 : 0, df[:, 4])) / nrows
+        prod_rank = sum(map(x -> x >= features[4] ? 1 : 0, df[:, 5])) / nrows
+        toxc_rank = sum(map(x -> x >= features[5] ? 1 : 0, df[:, 6])) / nrows
 
         # mesma ordem dos atributosn
         choice = argmax([vdut_rank, proc_rank, ener_rank, prod_rank, toxc_rank])
@@ -384,41 +384,38 @@ function print_greeting()
     )
 
     supertrunfo_description = Panel(
-        TextBox("""
-                Escolha o atributo da sua carta que voce acha que irá ganhar da carta
-                do outro jogador conforme os critérios abaixo:
-            """,
-           justify = :left,
-           width = 30,
-        );
+        TextBox(" Escolha o atributo da sua carta que voce acha que irá ganhar da carta " *
+                "do outro jogador conforme os critérios abaixo: ",
+                justify = :left,
+                width = 30);
         title = "Como Jogar",
         title_style = "bold white",
         fit = true,
     )
 
     greater_better = Panel(
-        /(TextBox("\n\n[bold green][⯅] Ganha o maior valor[/bold green]", width = 30),
+        /(TextBox("\n\n\n[bold green][⯅] Ganha o maior valor[/bold green]", width = 30),
           TextBox("[bold red][▼] Ganha o menor valor[/bold red]", width = 30)),
         title = "Força dos Atributos",
         title_style = "bold white",
-        height = 13,
+        height = 15,
         width = 36,
     )
 
     feature_descriptions = Dict(
-        "[green]Vida Útil:[/green]" => """Quantidade de tempo (em anos) que o produto 
-            deve funcionar sem que seja necessário trocá-lo.""",
+        "[green]Vida Útil:[/green]" => "Quantidade de tempo (em anos) que o produto " *
+            "deve funcionar sem que seja necessário trocá-lo.",
 
-        "[green]Capacidade de Processamento:[/green]" => """Quantidade de informação que 
-            o produto pode processar/utilizar, quando pssivel""",
+        "[green]Capacidade de Processamento:[/green]" => "Quantidade de informação que " *
+            "o produto pode processar/utilizar, quando pssivel",
 
-        "[red]Energia Consumida:[/red]" => """Quantidade de energia que o produto 
-            gasta durante o seu funcionamento""",
+        "[red]Energia Consumida:[/red]" => "Quantidade de energia que o produto " *
+            "gasta durante o seu funcionamento",
 
-        "[red]Produção Anual:[/red]" => """Quantidade de unidades do produto produzidas 
-            no último ano no mundo""",
+        "[red]Produção Anual:[/red]" => "Quantidade de unidades do produto produzidas " *
+            "no último ano no mundo",
 
-        "[red]Toxicidade:[/red]" => """Nível de toxicidade dos materiais que compôem o produto""",
+        "[red]Toxicidade:[/red]" => "Nível de toxicidade dos materiais que compôem o produto",
     )
 
     text_boxes = [
