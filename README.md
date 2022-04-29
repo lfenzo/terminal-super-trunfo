@@ -1,17 +1,17 @@
-# Super Trunfo 
+# Super Trunfo ou, em caso de empate, ambas as cartas dos jogadors voltam para o baralho.
 
 Implementação do jogo Super Trunfo com tema de sustentabilidade como Projeto Prático
 da disciplina de Sustentabilidade e Computação no primeiro semestre de 2022. O jogo
-é composto por 32 cartas cada correspondente a em equipamento eletro-eletrônico 
-utilizado no dia a dia. Cada carta possui 5 atributos 
+é composto por 32 cartas cada qual correspondente a um equipamento eletro-eletrônico 
+utilizado no dia a dia. Cada carta possui 5 atributos que caracterizam o equipamento.
 
 ![](./img/menu.png)
 
 O objetivo do jogo é fazer com que o adversário fique sem nenhuma carta, a cada
 rodada são comparadas as duas cartas que estão nas mãos dos jogadores. O jogador
 que ganhou a ultima rodada escolhe um atributo que será utilizado na comparação
-e dependendo do resultado da rodada ela pode perder uma cartaou ganhar a carta o
-oponente.
+e dependendo do resultado da rodada ela pode perder uma carta, ganhar a carta o
+oponente ou, em caso de empate, ambas as cartas dos jogadors voltam para o baralho.
 
 <table>
     <tr>
